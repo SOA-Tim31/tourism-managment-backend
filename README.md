@@ -1,5 +1,5 @@
 # Tourism Management Web Application
-## Backend for https://github.com/HelenaJovic/psw-front-end
+## Backend for https://github.com/HelenaJovic/tourism-managment-frontend
 
 ## Overview
 
