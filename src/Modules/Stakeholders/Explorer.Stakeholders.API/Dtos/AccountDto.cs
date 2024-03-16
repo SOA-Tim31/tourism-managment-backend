@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Explorer.Stakeholders.API.Dtos
 {
-    public class AccountDto
+    public class AccountDto 
     {
         public long UserId { get; set; }
         public string Username { get; set; }
