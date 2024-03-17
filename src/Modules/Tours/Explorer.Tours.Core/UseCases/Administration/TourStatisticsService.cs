@@ -135,11 +135,12 @@ namespace Explorer.Tours.Core.UseCases.Administration
 
         }
 
-        public List<double> GetVisitedTourPointPercentage(int authorId,int tourId) {
+        public List<double> GetVisitedTourPointPercentage(int authorId, int tourId)
+        {
 
             List<double> percentagesForTourPoints = new List<double>();
-        
-            TourDTO tourDto= new TourDTO();
+
+            TourDTO tourDto = new TourDTO();
 
             List<TourDTO> purchasedTours = new List<TourDTO>();
             purchasedTours = _tourPurchaseTokenService.GetAllPurchasedToursByAuthor(authorId);
@@ -154,7 +155,8 @@ namespace Explorer.Tours.Core.UseCases.Administration
             //za jednu turu svaki execution
             List<TourExecutionDto> tourExecutions = _tourExecutionService.GetAllExecutionsByTour(tourId);
             List<int> touristIds = new List<int>();
-            foreach (TourExecutionDto tourExecution in tourExecutions) {
+            foreach (TourExecutionDto tourExecution in tourExecutions)
+            {
                 touristIds.Add(tourExecution.UserId);
             }
 
@@ -165,11 +167,12 @@ namespace Explorer.Tours.Core.UseCases.Administration
                 double countVisited = 0;
                 foreach (int id in touristIds)
                 {
-                    if (_tourPointExecutionService.isTourPointCompletedByTourist(id,tourPoint.Id)) {
+                    if (_tourPointExecutionService.isTourPointCompletedByTourist(id, tourPoint.Id))
+                    {
                         countVisited++;
                     }
                 }
-                double percentage = (countVisited / touristIds.Count)*100;
+                double percentage = (countVisited / touristIds.Count) * 100;
 
                 percentagesForTourPoints.Add(percentage);
             }
@@ -178,7 +181,7 @@ namespace Explorer.Tours.Core.UseCases.Administration
 
         }
 
-        
+
 
 
         public List<int> GetMaxPercentage(int authorId)
@@ -196,7 +199,8 @@ namespace Explorer.Tours.Core.UseCases.Administration
             purchasedTours = purchasedTours.Distinct().ToList();
 
             int numberOfTourPoints = 0;
-            foreach (TourDTO tourDto in purchasedTours) {
+            foreach (TourDTO tourDto in purchasedTours)
+            {
 
                 numberOfTourPoints = tourDto.TourPoints.Count;
 
@@ -213,30 +217,30 @@ namespace Explorer.Tours.Core.UseCases.Administration
                 }
 
 
-                    foreach (int id in touristIds)
+                foreach (int id in touristIds)
+                {
+                    int maxTourPointId = _tourPointExecutionService.getMaxCompletedTourPointPerTourist(id, executionIds);
+                    int numberOfPassedPoints = maxTourPointId - tourDto.TourPoints[0].Id;
+                    double percentage = ((double)numberOfPassedPoints / (double)numberOfTourPoints) * 100;
+                    if (percentage <= 25)
                     {
-                       int maxTourPointId= _tourPointExecutionService.getMaxCompletedTourPointPerTourist(id, executionIds);
-                       int numberOfPassedPoints = maxTourPointId - tourDto.TourPoints[0].Id;
-                       double percentage= ((double)numberOfPassedPoints/(double) numberOfTourPoints)*100;
-                        if (percentage <= 25)
-                        {
-                            firstQuarter++;
-                        }
-                        if (percentage <= 50 && percentage>25)
-                        {
-                            secondQuarter++;
-                        }
-
-                        if (percentage <= 75 && percentage > 50)
-                        {
-                            thirdQuarter++;
-                        }
-                        if (percentage <= 100 && percentage > 75)
-                        {
-                            lastQuarter++;
-                        }
-
+                        firstQuarter++;
                     }
+                    if (percentage <= 50 && percentage > 25)
+                    {
+                        secondQuarter++;
+                    }
+
+                    if (percentage <= 75 && percentage > 50)
+                    {
+                        thirdQuarter++;
+                    }
+                    if (percentage <= 100 && percentage > 75)
+                    {
+                        lastQuarter++;
+                    }
+
+                }
             }
 
             numberOfPassedParts.Add(firstQuarter);
@@ -247,7 +251,7 @@ namespace Explorer.Tours.Core.UseCases.Administration
             return numberOfPassedParts;
         }
 
-        //za encounter
+       // za encounter
         public List<double> GetTourPointEncounterPercentage(int authorId, int tourId)
         {
 
@@ -279,7 +283,7 @@ namespace Explorer.Tours.Core.UseCases.Administration
                 double countVisited = 0;
                 foreach (int id in touristIds)
                 {
-                    if (_encounterExecutionService.IsEncounterForTourPointCompleted(id,tourPoint.Id))
+                    if (_encounterExecutionService.IsEncounterForTourPointCompleted(id, tourPoint.Id))
                     {
                         countVisited++;
                     }

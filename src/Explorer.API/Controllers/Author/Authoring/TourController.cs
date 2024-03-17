@@ -2,6 +2,7 @@
 using Explorer.Tours.API.Dtos;
 using Explorer.Tours.API.Public.Administration;
 using Explorer.Tours.Core.Domain.Tours;
+using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -13,21 +14,29 @@ namespace Explorer.API.Controllers.Author.Authoring
     {
         private readonly ITourService _tourService;
 
-        public TourController(ITourService tourService)
+        private readonly HttpClient _httpClient;
+
+        public TourController(ITourService tourService, HttpClient httpClient)
         {
             _tourService = tourService;
+            _httpClient = httpClient;
+
         }
 
 
         [HttpPost]
-        public ActionResult<TourDTO> Create([FromBody] TourDTO tour)
-        {
+		public async Task<ActionResult<TourDTO>> Create([FromBody] TourDTO tour)
+		{
             tour.Status = "Draft";
-            tour.Price = 0;
 
-            var result = _tourService.Create(tour);
+			var response = await _httpClient.PostAsJsonAsync("http://localhost:8000/tours", tour);
 
-            return CreateResponse(result);
+            if (!response.IsSuccessStatusCode)
+            {
+				return StatusCode((int)response.StatusCode);
+			}
+
+            return Ok();
         }
 
         [HttpGet("search/{lat:double}/{lon:double}/{ran:int}/{type:int}")]
@@ -49,11 +58,26 @@ namespace Explorer.API.Controllers.Author.Authoring
 
 
         [HttpGet("{userId:int}")]
-        public ActionResult<PagedResult<TourDTO>> GetByUserId(int userId, [FromQuery] int page, [FromQuery] int pageSize)
+        public async Task<ActionResult<PagedResult<TourDTO>>> GetByUserId(int userId, [FromQuery] int page, [FromQuery] int pageSize)
         {
-            var result = _tourService.GetByUserId(userId, page, pageSize);
-            return CreateResponse(result);
+            var apiUrl = $"http://localhost:8000/toursByUser/{userId}";
+            var response = await _httpClient.GetAsync(apiUrl);
+
+			if (!response.IsSuccessStatusCode)
+			{
+				return StatusCode((int)response.StatusCode);
+			}
+
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var tours = JsonConvert.DeserializeObject<List<TourDTO>>(responseBody);
+            Result<PagedResult<TourDTO>> pagedResult = new PagedResult<TourDTO>(tours, tours.Count);
+
+
+			return CreateResponse(pagedResult);
         }
+
+
+
         
         [Authorize(Policy = "touristAuthorPolicy")]
         [HttpDelete("{id:int}")]
