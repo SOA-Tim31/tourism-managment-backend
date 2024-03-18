@@ -147,11 +147,11 @@ namespace Explorer.Tours.Core.UseCases.TourExecuting
                 }
             }
 
-            if(executionDto.Status != "Completed")
+            if (executionDto.Status != "Completed")
             {
-                
+
                 _userMileageService.AddMileage(execution.UserId, executionDto.Tour.TourCharacteristics.FirstOrDefault().Distance);
-                _userTourMileageService.CreateInstance(execution.UserId,executionDto.Tour.TourCharacteristics.FirstOrDefault().Distance,DateTime.UtcNow);
+                _userTourMileageService.CreateInstance(execution.UserId, executionDto.Tour.TourCharacteristics.FirstOrDefault().Distance, DateTime.UtcNow);
                 _userMileageService.UpdateMileageByMonth(execution.UserId);
                 int xpAmount = Convert.ToInt32(executionDto.Tour.TourCharacteristics.FirstOrDefault().Distance) * 10;
                 _touristXPService.AddExperience(execution.UserId, xpAmount);
@@ -166,9 +166,9 @@ namespace Explorer.Tours.Core.UseCases.TourExecuting
         {
             var executions = CrudRepository.GetPaged(0, 0).Results;
             List<TourExecutionDto> executionDtos = new List<TourExecutionDto>();
-            foreach(var execution in executions)
+            foreach (var execution in executions)
             {
-                if(execution.UserId == userId)
+                if (execution.UserId == userId)
                 {
                     var executionDto = MapToDto(execution);
                     LoadTour(executionDto);
@@ -214,15 +214,15 @@ namespace Explorer.Tours.Core.UseCases.TourExecuting
 
             int executionId = _repository.Create(userId, tourId);
 
-            foreach(TourPoint tp in tour.TourPoints)
+            foreach (TourPoint tp in tour.TourPoints)
             {
                 _repository.CreatePoint(executionId, Convert.ToInt32(tp.Id));
             }
 
             _repository.CreatePosition(longitude, latitude, executionId);
-            
+
             return MapToDto(execution);
-        }   
+        }
         //dodato zbog tourRating
         public Result<PagedResult<TourExecutionDto>> GetAll(int page, int pageSize)
         {
