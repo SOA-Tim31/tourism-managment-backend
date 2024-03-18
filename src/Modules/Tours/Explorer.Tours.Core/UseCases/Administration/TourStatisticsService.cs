@@ -39,13 +39,14 @@ namespace Explorer.Tours.Core.UseCases.Administration
 
 
         }
-        
+
         //getNumberOfPurchasedToursByAuthor
-        public int GetNumberOfPurchaseByAuthor(int authorId) {
+        public int GetNumberOfPurchaseByAuthor(int authorId)
+        {
 
             List<TourDTO> purchasedTours = new List<TourDTO>();
             purchasedTours = _tourPurchaseTokenService.GetAllPurchasedToursByAuthor(authorId);
-            purchasedTours=purchasedTours.Distinct().ToList();
+            purchasedTours = purchasedTours.Distinct().ToList();
             return purchasedTours.Count;
 
         }
@@ -58,13 +59,15 @@ namespace Explorer.Tours.Core.UseCases.Administration
 
         }
 
-        public int GetNumberOfCompletedByAuthor(int authorId) {
+        public int GetNumberOfCompletedByAuthor(int authorId)
+        {
             List<TourDTO> purchasedTours = new List<TourDTO>();
             purchasedTours = _tourPurchaseTokenService.GetAllPurchasedToursByAuthor(authorId);
             int count = 0;
             foreach (var tour in purchasedTours)
             {
-                if (_tourExecutionService.IsTourFinished(tour.Id)) {
+                if (_tourExecutionService.IsTourFinished(tour.Id))
+                {
                     count++;
                 }
             }

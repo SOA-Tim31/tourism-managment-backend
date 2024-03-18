@@ -1,4 +1,6 @@
 ﻿using Explorer.BuildingBlocks.Core.UseCases;
+using Explorer.Stakeholders.API.Dtos;
+using Explorer.Stakeholders.Core.Domain;
 using Explorer.Tours.API.Dtos;
 using Explorer.Tours.API.Public.Administration;
 using Explorer.Tours.Core.Domain.Tours;
@@ -127,11 +129,25 @@ namespace Explorer.API.Controllers.Author.Authoring
             return CreateResponse(result);
         }
 
+
+
+
         [HttpGet("onetour/{id:int}")]
 
-        public ActionResult<TourDTO> getTourByTourId(int id)
+        public async  Task<ActionResult<TourDTO>> getTourByTourId(int id)
         {
-            var result = _tourService.GetTourByTourId(id);
+			var apiUrl = $"http://localhost:8000/tours/{id}";
+			var response = await _httpClient.GetAsync(apiUrl);
+
+			if (!response.IsSuccessStatusCode)
+			{
+				return StatusCode((int)response.StatusCode);
+			}
+
+			var responseBody = await response.Content.ReadAsStringAsync();
+			Result<TourDTO> result = JsonConvert.DeserializeObject<TourDTO>(responseBody);
+
+		
             return CreateResponse(result);
         }
 
