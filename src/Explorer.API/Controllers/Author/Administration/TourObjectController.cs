@@ -1,9 +1,12 @@
 ﻿using Explorer.BuildingBlocks.Core.UseCases;
 using Explorer.Tours.API.Dtos;
 using Explorer.Tours.API.Public.Administration;
+using Explorer.Tours.Core.Domain;
 using Explorer.Tours.Core.UseCases.Administration;
+using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Explorer.API.Controllers.Author.Administration
 {
@@ -13,23 +16,54 @@ namespace Explorer.API.Controllers.Author.Administration
     {
         private readonly ITourObjectService _objectService;
 
-        public ObjectController(ITourObjectService objectService)
+        public ObjectController(ITourObjectService objectService, HttpClient httpClient)
         {
             _objectService = objectService;
+            _httpClient = httpClient;
+
         }
 
+        private readonly HttpClient _httpClient;
+
+
         [HttpGet]
-        public ActionResult<PagedResult<TourObjectDto>> GetAll([FromQuery] int page, [FromQuery] int pageSize)
+        public async Task<ActionResult<List<TourObjectDto>>> GetAll()
         {
-            var result = _objectService.GetPaged(page, pageSize);
-            return CreateResponse(result);
+            using var httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri("http://localhost:8000/");
+
+            try
+            {
+                var response = await httpClient.GetAsync("objects");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    Result<List<TourObjectDto>> accounts = JsonConvert.DeserializeObject<List<TourObjectDto>>(content);
+                    return CreateResponse(accounts);
+                }
+                else
+                {
+                    return StatusCode((int)response.StatusCode, "Failed to retrieve accounts from the other app.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while communicating with the other app: " + ex.Message);
+            }
         }
 
         [HttpPost]
-        public ActionResult<TourObjectDto> Create([FromBody] TourObjectDto tourObject)
+        public async Task<ActionResult<TourObjectDto>> CreateAsync([FromBody] TourObjectDto tourObject)
         {
-            var result = _objectService.Create(tourObject);
-            return CreateResponse(result);
+            var response = await _httpClient.PostAsJsonAsync("http://localhost:8000/objects", tourObject);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return StatusCode((int)response.StatusCode);
+            }
+
+            return Ok();
         }
 
         [HttpPut("{id:int}")]
