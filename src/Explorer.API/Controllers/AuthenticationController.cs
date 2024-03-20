@@ -25,7 +25,7 @@ public class AuthenticationController : BaseApiController
     {
         using var httpClient =new HttpClient();
         httpClient.BaseAddress = new Uri("http://localhost:8081/");
-        Console.WriteLine("pre svega:");
+        
         try
         {
             var json = JsonConvert.SerializeObject(account);
