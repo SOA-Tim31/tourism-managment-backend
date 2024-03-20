@@ -26,10 +26,12 @@ namespace Explorer.Tours.Core.UseCases.Administration
         {
             List<TourDTO> tours = new List<TourDTO>();
 
-            foreach (int tourId in tourIds) {
+            foreach (int tourId in tourIds)
+            {
                 var tourResult = this._tourService.GetTourByTourId(tourId);
 
-                if (tourResult.IsSuccess) {
+                if (tourResult.IsSuccess)
+                {
                     tours.Add(tourResult.Value);
                 }
             }

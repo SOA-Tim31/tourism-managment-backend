@@ -5,6 +5,7 @@ using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Drawing.Printing;
 using System.Text;
 
 namespace Explorer.API.Controllers.Administrator.Administration
@@ -21,10 +22,30 @@ namespace Explorer.API.Controllers.Administrator.Administration
 
         [HttpGet]
         [Authorize(Policy = "administratorPolicy")]
-        public ActionResult<PagedResult<AppRatingDto>> GetAll([FromQuery] int page, [FromQuery] int pageSize)
+        public async Task<List<AppRatingDto>> GetAll()
         {
-            var result = _appRatingService.GetPaged(page, pageSize);
-            return CreateResponse(result);
+             using var httpClient = new HttpClient();
+             httpClient.BaseAddress = new Uri("http://localhost:8081/");
+
+             try
+             {
+                 var response = await httpClient.GetAsync("ratings/getAll");
+
+                 if (response.IsSuccessStatusCode)
+                 {
+                     var content = await response.Content.ReadAsStringAsync();
+                     List<AppRatingDto> ratings= JsonConvert.DeserializeObject<List<AppRatingDto>>(content);
+                     return ratings;
+                 }
+                 else
+                 {
+                    return null;//return StatusCode((int)response.StatusCode, "Failed to retrieve ratings from the other app.");
+                 }
+             }
+             catch (Exception ex)
+             {
+                return null;//return StatusCode(500, "An error occurred while communicating with the other app: " + ex.Message);
+             }
         }
 
         [HttpPost]

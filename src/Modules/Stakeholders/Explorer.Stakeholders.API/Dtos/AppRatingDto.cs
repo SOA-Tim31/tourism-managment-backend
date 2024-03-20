@@ -8,7 +8,7 @@ namespace Explorer.Stakeholders.API.Dtos
 {
     public class AppRatingDto
     {
-        public int Id { get; set; } = 0;
+        public int Id { get; set; } 
         public int UserId { get; set; }
         public int Rating { get; set; }
         public string? Description { get; set; }
