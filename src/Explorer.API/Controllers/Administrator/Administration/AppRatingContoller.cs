@@ -82,6 +82,6 @@ namespace Explorer.API.Controllers.Administrator.Administration
              var result = _appRatingService.Create(appRating);
              return CreateResponse(result);*/
         }
-    }
+}
 
 }
