@@ -14,13 +14,13 @@ namespace Explorer.Tours.Core.Domain.Tours
         public Tour? Tour { get; init; }
         public string Name { get; init; }
         public string? Description { get; init; }
-        public double Latitude { get; init; }
-        public double Longitude { get; init; }
+        public float Latitude { get; init; }
+        public float Longitude { get; init; }
         public string ImageUrl { get; init; }
 
         public string Secret { get; init; }
 
-        public TourPoint(int idTour, string name, string? description, double latitude, double longitude, string imageUrl, string secret)
+        public TourPoint(int idTour, string name, string? description, float latitude, float longitude, string imageUrl, string secret)
         {
             if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Invalid Name.");
             TourId = idTour;

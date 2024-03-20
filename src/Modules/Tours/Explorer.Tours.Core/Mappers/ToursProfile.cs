@@ -62,7 +62,7 @@ public class ToursProfile : Profile
       .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Enum.Parse(typeof(TourStatus), src.Status)))
      .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
      .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
-     .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.Tags))
+    // .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.Tags))
      .ForMember(dest => dest.PublishedDateTime, opt => opt.MapFrom(src => src.PublishedDateTime));
 
 

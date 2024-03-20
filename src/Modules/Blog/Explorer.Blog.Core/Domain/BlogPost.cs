@@ -21,12 +21,12 @@ namespace Explorer.Blog.Core.Domain
         public string Title { get; init; }
         public string Description { get; init; }
         public DateTime CreationDate { get; init; }
-        public List<string>? ImageURLs { get; init; }
+        public string? ImageURLs { get; init; }
         public List<BlogPostComment>? Comments { get; init; }
         public List<BlogPostRating>? Ratings { get; init; }
         public BlogPostStatus Status { get; set; }
 
-        public BlogPost(int authorId,int tourId, string title, string description, DateTime creationDate, List<string>? imageURLs, List<BlogPostComment>? comments, BlogPostStatus status, List<BlogPostRating>? ratings)
+        public BlogPost(int authorId,int tourId, string title, string description, DateTime creationDate, string imageURLs, List<BlogPostComment>? comments, BlogPostStatus status, List<BlogPostRating>? ratings)
         {
             if (authorId == 0) throw new ArgumentException("Field required");
             if (string.IsNullOrWhiteSpace(title)) throw new ArgumentException("Invalid Title.");
@@ -40,7 +40,7 @@ namespace Explorer.Blog.Core.Domain
             Title = title;
             Description = description;
             CreationDate = creationDate;
-            ImageURLs = imageURLs ?? new List<string>();
+            ImageURLs = imageURLs;
             Comments = comments ?? new List<BlogPostComment>();
             Ratings = ratings ?? new List<BlogPostRating>();
             Status = status;

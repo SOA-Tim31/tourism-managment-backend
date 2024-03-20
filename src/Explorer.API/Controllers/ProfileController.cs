@@ -1,10 +1,14 @@
 ﻿using Explorer.BuildingBlocks.Core.UseCases;
 using Explorer.Stakeholders.API.Dtos;
 using Explorer.Stakeholders.API.Public;
+using Explorer.Stakeholders.Core.Domain;
 using Explorer.Stakeholders.Core.UseCases;
 using Explorer.Tours.API.Dtos;
+using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace Explorer.API.Controllers;
 
@@ -21,16 +25,65 @@ public class ProfileController : BaseApiController
     }
 
     [HttpGet("{userId}")]
-    public ActionResult<UserProfileDto> Get([FromRoute] int userId)
+    public async Task<ActionResult<UserProfileDto>> Get([FromRoute] int userId)
     {
-        var result = _profileService.Get(userId);
-        return CreateResponse(result);
+        using var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri("http://localhost:8081/");
+
+        try
+        {
+            var response = await httpClient.GetAsync("people/get/" + userId);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                Result<UserProfileDto> profile = JsonConvert.DeserializeObject<UserProfileDto>(content);
+                return CreateResponse(profile);
+            }
+            else
+            {
+                return StatusCode((int)response.StatusCode, "Failed to retrieve accounts from the other app.");
+            }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "An error occurred while communicating with the other app: " + ex.Message);
+        }
+
+        /*var result = _profileService.Get(userId);
+        return CreateResponse(result);*/
     }
 
     [HttpPut("{id:int}")]
-    public ActionResult<UserProfileDto> Update([FromBody] UserProfileDto profile)
+    public async Task<ActionResult<UserProfileDto>> Update([FromBody] UserProfileDto profile)
     {
+        using var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri("http://localhost:8081/");
+
+        try
+        {
+            var jsonContent = JsonConvert.SerializeObject(profile);
+            var stringContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+            var response = await httpClient.PutAsync("people/update", stringContent);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                Result<UserProfileDto> userProfile = JsonConvert.DeserializeObject<UserProfileDto>(content);
+                return CreateResponse(userProfile);
+            }
+            else
+            {
+                return StatusCode((int)response.StatusCode, "Failed to retrieve accounts from the other app.");
+            }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "An error occurred while communicating with the other app: " + ex.Message);
+        }
+
+        /*
         var result = _profileService.Update(profile);
-        return CreateResponse(result);
+        return CreateResponse(result);*/
     }
 }

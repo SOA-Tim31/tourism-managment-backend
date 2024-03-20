@@ -1,10 +1,12 @@
 ﻿using Explorer.BuildingBlocks.Core.UseCases;
 using Explorer.Tours.API.Dtos;
 using Explorer.Tours.API.Public.Administration;
+using Explorer.Tours.Core.Domain.Tours;
 using Explorer.Tours.Core.UseCases.Administration;
 using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Explorer.API.Controllers.Author.Administration
 {
@@ -16,9 +18,12 @@ namespace Explorer.API.Controllers.Author.Administration
     {
         private readonly ITourPointService _tourPointService;
 
-        public TourPointController(ITourPointService tourPointService)
+        private readonly HttpClient _httpClient;
+
+        public TourPointController(ITourPointService tourPointService, HttpClient httpClient)
         {
             _tourPointService = tourPointService;
+            _httpClient = httpClient;
         }
         [Authorize(Policy = "authorPolicy")]
         [HttpGet]
@@ -27,23 +32,25 @@ namespace Explorer.API.Controllers.Author.Administration
             var result = _tourPointService.GetPaged(page, pageSize);
             return CreateResponse(result);
         }
-        
-        [HttpPost]/*
-        public (ActionResult<TourPointDto>, int) Create([FromBody] TourPointDto tourPoint)
-        {
-            var result = _tourPointService.Create(tourPoint);
-            Console.WriteLine("rezultat id:" + result.Value.Id);
 
-            return (CreateResponse(result), result.Value.Id);
-        }*/
-        
-        public ActionResult<PagedResult<TourPointDto>> Create([FromBody] TourPointDto tourPoint)
+	
+
+		[HttpPost]
+       
+        public async Task<ActionResult<PagedResult<TourPointDto>>> Create([FromBody] TourPointDto tourPoint)
         {
-            var result = _tourPointService.Create(tourPoint);
-            Console.WriteLine("rezultat id:" + result.Value.Id);
-            
-            return CreateResponse(result);
-        }
+         
+
+			var response = await _httpClient.PostAsJsonAsync("http://localhost:8000/tourPoints", tourPoint);
+
+			if (!response.IsSuccessStatusCode)
+			{
+				return StatusCode((int)response.StatusCode);
+			}
+
+			return Ok();
+		}
+
 
         [Authorize(Policy = "authorPolicy")]
         [HttpPut("{id:int}")]
@@ -61,16 +68,20 @@ namespace Explorer.API.Controllers.Author.Administration
             return CreateResponse(result);
         }
 
-        [Authorize(Policy = "touristAuthorPolicy")]
+        
         [HttpGet("{tourId:int}")]
 
-		public ActionResult<List<TourPointDto>> GetTourPointsByTourId(int tourId)
+		public async Task<ActionResult<List<TourPointDto>>> GetTourPointsByTourId(int tourId)
 		{
 			var result = _tourPointService.GetTourPointsByTourId(tourId);
 			return CreateResponse(result);
 		}
 
-        [HttpGet("getById/{id:int}")]
+
+
+		
+
+		[HttpGet("getById/{id:int}")]
         public ActionResult<TourPointDto> GetTourPointById(int id)
         {
             var result = _tourPointService.Get(id);
