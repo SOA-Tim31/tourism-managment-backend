@@ -35,6 +35,7 @@ public class ToursProfile : Profile
 
         CreateMap<TourObjectDto, TourObject>()
         .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+        .ForMember(dest => dest.TourId, opt => opt.MapFrom(src => src.TourId))
         .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
         .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ImageUrl))
         .ForMember(dest => dest.Category, opt => opt.MapFrom(src => Enum.Parse(typeof(ObjectCategory), src.Category)))
@@ -43,6 +44,7 @@ public class ToursProfile : Profile
 
         CreateMap<TourObject, TourObjectDto>()
         .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+        .ForMember(dest => dest.TourId, opt => opt.MapFrom(src => src.TourId))
         .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
         .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ImageUrl))
         .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category.ToString()))

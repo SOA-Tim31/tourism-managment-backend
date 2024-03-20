@@ -1,9 +1,15 @@
 ﻿using Explorer.BuildingBlocks.Core.UseCases;
+using Explorer.Stakeholders.API.Dtos;
 using Explorer.Tours.API.Dtos;
 using Explorer.Tours.API.Public.Administration;
+using Explorer.Tours.Core.Domain;
+using Explorer.Tours.Core.Domain.Tours;
 using Explorer.Tours.Core.UseCases.Administration;
+using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Explorer.API.Controllers.Tourist
 {
@@ -11,39 +17,72 @@ namespace Explorer.API.Controllers.Tourist
     [Route("api/tourist/tourReview")]
     public class TourReviewController : BaseApiController
     {
-        private readonly ITourReviewService _tourReviewService;
-        public TourReviewController(ITourReviewService tourReviewService)
+        private readonly HttpClient _httpClient;
+
+        public TourReviewController(HttpClient httpClient)
         {
-            _tourReviewService = tourReviewService;
+            _httpClient = httpClient;
         }
 
         [HttpPost]
-        public ActionResult<TourReviewDto> Create([FromBody] TourReviewDto tourReviewDto) { 
-        
-            var result= _tourReviewService.Create(tourReviewDto);
-            return CreateResponse(result);
+        public async Task<ActionResult<TourReviewDto>> CreateAsync([FromBody] TourReviewDto tourReviewDto) {
+
+            var response = await _httpClient.PostAsJsonAsync("http://localhost:8000/reviews", tourReviewDto);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return StatusCode((int)response.StatusCode);
+            }
+
+            return Ok();
         }
+
 
         [HttpGet]
-        public ActionResult<PagedResult<TourReviewDto>> GetAll([FromQuery] int page, [FromQuery] int pageSize)
+        public async Task<ActionResult<List<TourReviewDto>>> GetAll()
         {
-            var result = _tourReviewService.GetPaged(page, pageSize);
-            return CreateResponse(result);
-        }
+            using var httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri("http://localhost:8000/");
 
-        [HttpPut("{id:int}")]
-        public ActionResult<TourReviewDto> Update([FromBody] TourReviewDto tourReviewDto)
-        {
-            var result = _tourReviewService.Update(tourReviewDto);
-            return CreateResponse(result);
+            try
+            {
+                var response = await httpClient.GetAsync("reviews");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    Result<List<TourReviewDto>> accounts = JsonConvert.DeserializeObject<List<TourReviewDto>>(content);
+                    return CreateResponse(accounts);
+                }
+                else
+                {
+                    return StatusCode((int)response.StatusCode, "Failed to retrieve accounts from the other app.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while communicating with the other app: " + ex.Message);
+            }
         }
+        //[HttpPut("{id:int}")]
+        //public ActionResult<TourReviewDto> Update([FromBody] TourReviewDto tourReviewDto)
+        //{
+        //    var result = _tourReviewService.Update(tourReviewDto);
+        //    return CreateResponse(result);
+        //}
 
         [HttpDelete("{id:int}")]
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> DeleteAsync(int id)
         {
-            var result = _tourReviewService.Delete(id);
-            return CreateResponse(result);
+            var response = await _httpClient.DeleteAsync($"http://localhost:8000/reviews/{id}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return StatusCode((int)response.StatusCode);
+            }
+
+            return Ok();
         }
+    }
 
     }
-}
