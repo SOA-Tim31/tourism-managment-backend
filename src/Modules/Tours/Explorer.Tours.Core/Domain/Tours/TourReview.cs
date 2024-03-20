@@ -16,20 +16,18 @@ namespace Explorer.Tours.Core.Domain.Tours
         public int TouristId { get; init; }
         public DateTime AttendanceDate { get; init; }
         public DateTime ReviewDate { get; init; }
-        public List<string> Images { get; init; }
 
         public long TourId { get; init; }
 
         public Tour? Tour { get; init; }
 
-        public TourReview(double grade, string comment, int touristId, DateTime attendanceDate, DateTime reviewDate, List<string> images, long tourId)
+        public TourReview(double grade, string comment, int touristId, DateTime attendanceDate, DateTime reviewDate,  long tourId)
         {
             Grade = grade;
             Comment = comment;
             TouristId = touristId;
             AttendanceDate = attendanceDate;
             ReviewDate = reviewDate;
-            Images = images;
             TourId = tourId;
 
             Validate();
