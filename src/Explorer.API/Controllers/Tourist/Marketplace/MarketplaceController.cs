@@ -30,13 +30,13 @@ namespace Explorer.API.Controllers.Tourist.Marketplace
         [HttpGet]
         public ActionResult<PagedResult<TourDTO>> GetAll()
         {
-            var result = _tourService.GetPublished();
-            foreach(var tour in result.Value.Results)
-            {
-                var tourPoints = _tourPointService.GetTourPointsByTourId(tour.Id);
-                tour.TourPoints = tourPoints.Value.Results;
-            }
-            return CreateResponse(result);
+           var result = _tourService.GetPublished();
+           foreach(var tour in result.Value.Results)
+           {
+              var tourPoints = _tourPointService.GetTourPointsByTourId(tour.Id);
+               tour.TourPoints = tourPoints.Value.Results;
+           }
+           return CreateResponse(result);
         }
 
         [HttpPut("buy")]
@@ -61,9 +61,9 @@ namespace Explorer.API.Controllers.Tourist.Marketplace
 
         public ActionResult<TourDTO> Get([FromRoute] int tourId)
         {
-            var result = _tourService.Get(tourId);
+           var result = _tourService.Get(tourId);
             var tourPoints = _tourPointService.GetTourPointsByTourId(result.Value.Id);
-            result.Value.TourPoints = tourPoints.Value.Results;
+           result.Value.TourPoints = tourPoints.Value.Results;
             return CreateResponse(result);
         }
 
