@@ -13,22 +13,14 @@ builder.Services.RegisterModules();
 
 
 var app = builder.Build();
+ 
+app.UseDeveloperExceptionPage();
+app.UseSwagger();
+app.UseSwaggerUI();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseDeveloperExceptionPage();
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-else
-{
-    app.UseExceptionHandler("/error");
-    app.UseHsts();
-}
 
 app.UseRouting();
 app.UseCors(corsPolicy);
-app.UseHttpsRedirection();
 app.UseAuthorization();
 app.UseAuthorization();
 
