@@ -30,7 +30,7 @@ namespace Explorer.API.Controllers.Author.Administration
         public async Task<ActionResult<List<TourObjectDto>>> GetAll()
         {
             using var httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri("http://localhost:8000/");
+            httpClient.BaseAddress = new Uri("http://tours:8000/");
 
             try
             {
@@ -56,7 +56,7 @@ namespace Explorer.API.Controllers.Author.Administration
         [HttpPost]
         public async Task<ActionResult<TourObjectDto>> CreateAsync([FromBody] TourObjectDto tourObject)
         {
-            var response = await _httpClient.PostAsJsonAsync("http://localhost:8000/objects", tourObject);
+            var response = await _httpClient.PostAsJsonAsync("http://tours:8000/objects", tourObject);
 
             if (!response.IsSuccessStatusCode)
             {

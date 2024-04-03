@@ -27,7 +27,7 @@ namespace Explorer.API.Controllers.Tourist
         [HttpPost]
         public async Task<ActionResult<TourReviewDto>> CreateAsync([FromBody] TourReviewDto tourReviewDto) {
 
-            var response = await _httpClient.PostAsJsonAsync("http://localhost:8000/reviews", tourReviewDto);
+            var response = await _httpClient.PostAsJsonAsync("http://tours:8000/reviews", tourReviewDto);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -42,7 +42,7 @@ namespace Explorer.API.Controllers.Tourist
         public async Task<ActionResult<List<TourReviewDto>>> GetAll()
         {
             using var httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri("http://localhost:8000/");
+            httpClient.BaseAddress = new Uri("http://tours:8000/");
 
             try
             {
@@ -74,7 +74,7 @@ namespace Explorer.API.Controllers.Tourist
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> DeleteAsync(int id)
         {
-            var response = await _httpClient.DeleteAsync($"http://localhost:8000/reviews/{id}");
+            var response = await _httpClient.DeleteAsync($"http://tours:8000/reviews/{id}");
 
             if (!response.IsSuccessStatusCode)
             {
