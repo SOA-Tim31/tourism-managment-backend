@@ -20,8 +20,7 @@ namespace Explorer.Tours.Core.Domain.Tours
         public long TourId { get; init; }
 
         public Tour? Tour { get; init; }
-
-        public TourReview(double grade, string comment, int touristId, DateTime attendanceDate, DateTime reviewDate,  long tourId)
+        public TourReview(double grade, string comment, int touristId, DateTime attendanceDate, DateTime reviewDate, long tourId)
         {
             Grade = grade;
             Comment = comment;

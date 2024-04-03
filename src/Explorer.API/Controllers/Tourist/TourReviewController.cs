@@ -25,8 +25,7 @@ namespace Explorer.API.Controllers.Tourist
         }
 
         [HttpPost]
-        public async Task<ActionResult<TourReviewDto>> CreateAsync([FromBody] TourReviewDto tourReviewDto)
-        {
+        public async Task<ActionResult<TourReviewDto>> CreateAsync([FromBody] TourReviewDto tourReviewDto) {
 
             var response = await _httpClient.PostAsJsonAsync("http://localhost:8000/reviews", tourReviewDto);
 
@@ -76,6 +75,7 @@ namespace Explorer.API.Controllers.Tourist
         public async Task<ActionResult> DeleteAsync(int id)
         {
             var response = await _httpClient.DeleteAsync($"http://localhost:8000/reviews/{id}");
+
 
             if (!response.IsSuccessStatusCode)
             {
