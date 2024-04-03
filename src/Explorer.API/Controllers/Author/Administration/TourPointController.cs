@@ -41,7 +41,7 @@ namespace Explorer.API.Controllers.Author.Administration
         {
          
 
-			var response = await _httpClient.PostAsJsonAsync("http://localhost:8000/tourPoints", tourPoint);
+			var response = await _httpClient.PostAsJsonAsync("http://tours:8000/tourPoints", tourPoint);
 
 			if (!response.IsSuccessStatusCode)
 			{

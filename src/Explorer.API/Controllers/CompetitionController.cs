@@ -30,7 +30,7 @@ namespace Explorer.API.Controllers
 		[HttpPost]
 		public async Task<ActionResult<CompetitionDto>> Create([FromBody] CompetitionDto competition)
 		{
-			var response = await _httpClient.PostAsJsonAsync("http://localhost:8000/competitions", competition);
+			var response = await _httpClient.PostAsJsonAsync("http://tours:8000/competitions", competition);
 
 			if (!response.IsSuccessStatusCode)
 			{
@@ -48,7 +48,7 @@ namespace Explorer.API.Controllers
 		[HttpGet("allCompetitions")]
 		public async  Task<ActionResult<PagedResult<CompetitionDto>>> GetAll([FromQuery] int page, [FromQuery] int pageSize)
 		{
-			var apiUrl = $"http://localhost:8000/competitions";
+			var apiUrl = $"http://tours:8000/competitions";
 			var response = await _httpClient.GetAsync(apiUrl);
 
 			if (!response.IsSuccessStatusCode)
