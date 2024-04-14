@@ -25,7 +25,7 @@ public class AuthenticationController : BaseApiController
     public async Task<ActionResult<AuthenticationTokensDto>> RegisterTourist([FromBody] AccountRegistrationDto account)
     {
         using var httpClient =new HttpClient();
-        httpClient.BaseAddress = new Uri("http://localhost:8081/");
+        httpClient.BaseAddress = new Uri("http://stakeholders:81/");
         
         try
         {

@@ -25,7 +25,7 @@ namespace Explorer.API.Controllers.Administrator.Administration
         public async Task<List<AppRatingDto>> GetAll()
         {
              using var httpClient = new HttpClient();
-             httpClient.BaseAddress = new Uri("http://localhost:8081/");
+             httpClient.BaseAddress = new Uri("http://stakeholders:81/");
 
              try
              {
@@ -53,7 +53,7 @@ namespace Explorer.API.Controllers.Administrator.Administration
         public async Task<ActionResult<AppRatingDto>> Create([FromBody] AppRatingDto appRating)
         {
             using var httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri("http://localhost:8081/");
+            httpClient.BaseAddress = new Uri("http://stakeholders:81/");
 
             try
             {

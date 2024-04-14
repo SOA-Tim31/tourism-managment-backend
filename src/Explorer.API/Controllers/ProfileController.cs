@@ -28,7 +28,7 @@ public class ProfileController : BaseApiController
     public async Task<ActionResult<UserProfileDto>> Get([FromRoute] int userId)
     {
         using var httpClient = new HttpClient();
-        httpClient.BaseAddress = new Uri("http://localhost:8081/");
+        httpClient.BaseAddress = new Uri("http://stakeholders:81/");
 
         try
         {
@@ -58,7 +58,7 @@ public class ProfileController : BaseApiController
     public async Task<ActionResult<UserProfileDto>> Update([FromBody] UserProfileDto profile)
     {
         using var httpClient = new HttpClient();
-        httpClient.BaseAddress = new Uri("http://localhost:8081/");
+        httpClient.BaseAddress = new Uri("http://stakeholders:81/");
 
         try
         {

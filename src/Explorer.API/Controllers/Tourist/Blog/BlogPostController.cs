@@ -36,7 +36,7 @@ namespace Explorer.API.Controllers.Tourist.Blog
         public async Task<List<BlogPostDto>> GetAll()
         {
             using var httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri("http://localhost:8082/");
+            httpClient.BaseAddress = new Uri("http://blogs:80/");
 
             try
             {
@@ -63,7 +63,7 @@ namespace Explorer.API.Controllers.Tourist.Blog
         public async Task<ActionResult<BlogPostDto>> GetById([FromRoute] int blogPostId)
         {
             using var httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri("http://localhost:8082/");
+            httpClient.BaseAddress = new Uri("http://blogs:80/");
 
             try
             {
@@ -94,7 +94,7 @@ namespace Explorer.API.Controllers.Tourist.Blog
         public async Task<ActionResult<UserProfileDto>> Get([FromRoute] int userId)
         {
             using var httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri("http://localhost:8081/");
+            httpClient.BaseAddress = new Uri("http://stakeholders:81/");
 
             try
             {
@@ -151,7 +151,7 @@ namespace Explorer.API.Controllers.Tourist.Blog
         public async Task<ActionResult<BlogPostCommentDto>> AddComment([FromBody] BlogPostCommentDto blogPostComment)
         {
             using var httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri("http://localhost:8082/");
+            httpClient.BaseAddress = new Uri("http://blogs:80/");
 
             try
             {
@@ -182,7 +182,7 @@ namespace Explorer.API.Controllers.Tourist.Blog
         {
 
             using var httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri("http://localhost:8082/");
+            httpClient.BaseAddress = new Uri("http://blogs:80/");
 
             try
             {

@@ -56,15 +56,15 @@ namespace Explorer.API.Controllers.Author.Administration
         [HttpPost]
         public async Task<ActionResult<TourObjectDto>> CreateAsync([FromBody] TourObjectDto tourObject)
         {
-            var response = await _httpClient.PostAsJsonAsync("http://tours:8000/objects", tourObject);
+			var response = await _httpClient.PostAsJsonAsync("http://tours:8000/objects", tourObject);
 
-            if (!response.IsSuccessStatusCode)
-            {
-                return StatusCode((int)response.StatusCode);
-            }
+			if (!response.IsSuccessStatusCode)
+			{
+				return StatusCode((int)response.StatusCode);
+			}
 
-            return Ok();
-        }
+			return Ok();
+		}
 
         [HttpPut("{id:int}")]
         public ActionResult<TourObjectDto> Update([FromBody] TourObjectDto tourObject)

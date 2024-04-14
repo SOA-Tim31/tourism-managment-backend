@@ -40,6 +40,23 @@ services:
         target: /tmp/explorer-init.sql
     ports:
       - "5432:5432"
+      
+  stakeholders:
+    image: stakeholders
+    restart: on-failure
+    networks:
+      - database
+    ports:
+      - "81:81"
+    environment:
+      DATABASE_HOST: database
+      DATABASE_PORT: 5432
+      DATABASE_PASSWORD: super
+      DATABASE_USER: postgres
+      DATABASE_SCHEMA: explorer
+    depends_on:
+      - explorer
+      - database
 
   tours:
     image: tours
@@ -62,8 +79,13 @@ services:
 volumes:
   database-data:
     name: explorer
+  database1-data:
+    name: SOA
 
 networks:
   database:
     name: database
+    driver: bridge
+  database1:
+    name: database1
     driver: bridge
