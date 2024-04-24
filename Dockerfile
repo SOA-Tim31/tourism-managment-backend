@@ -45,7 +45,6 @@ ENV DATABASE_USERNAME=""
 
 ENV STAKEHOLDERS_TARGET_PROJECT=Explorer.Stakeholders.Infrastructure
 
-ENV TOURS_TARGET_PROJECT=Explorer.Tours.Infrastructure
 
 ENV BLOG_TARGET_PROJECT=Explorer.Blog.Infrastructure
 
@@ -66,16 +65,6 @@ CMD PATH="$PATH:/root/.dotnet/tools" \
         -s "${STARTUP_PROJECT}/${STARTUP_PROJECT}.csproj" \
         -p "Modules/Stakeholders/${STAKEHOLDERS_TARGET_PROJECT}/${STAKEHOLDERS_TARGET_PROJECT}.csproj" \
         -c "StakeholdersContext" \
-        --configuration Release && \
-    dotnet-ef migrations add "${MIGRATION}-tours" \
-        -s "${STARTUP_PROJECT}/${STARTUP_PROJECT}.csproj" \
-        -p "Modules/Tours/${TOURS_TARGET_PROJECT}/${TOURS_TARGET_PROJECT}.csproj" \
-        -c "ToursContext" \
-        --configuration Release && \  
-    dotnet-ef database update "${MIGRATION}-tours" \
-        -s "${STARTUP_PROJECT}/${STARTUP_PROJECT}.csproj" \
-        -p "Modules/Tours/${TOURS_TARGET_PROJECT}/${TOURS_TARGET_PROJECT}.csproj" \
-        -c "ToursContext" \
         --configuration Release && \
     dotnet-ef migrations add "${MIGRATION}-blog" \
         -s "${STARTUP_PROJECT}/${STARTUP_PROJECT}.csproj" \
