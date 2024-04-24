@@ -31,7 +31,7 @@ namespace Explorer.API.Controllers.Author.Authoring
 		{
             tour.Status = "Draft";
 
-			var response = await _httpClient.PostAsJsonAsync("http://localhost:8000/tours", tour);
+			var response = await _httpClient.PostAsJsonAsync("http://tours:8000/tours", tour);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -62,7 +62,7 @@ namespace Explorer.API.Controllers.Author.Authoring
         [HttpGet("{userId:int}")]
         public async Task<ActionResult<PagedResult<TourDTO>>> GetByUserId(int userId, [FromQuery] int page, [FromQuery] int pageSize)
         {
-            var apiUrl = $"http://localhost:8000/toursByUser/{userId}";
+            var apiUrl = $"http://tours:8000/toursByUser/{userId}";
             var response = await _httpClient.GetAsync(apiUrl);
 
 			if (!response.IsSuccessStatusCode)

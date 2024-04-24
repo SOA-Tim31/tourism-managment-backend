@@ -20,7 +20,7 @@ namespace Explorer.API.Controllers.Author
         [HttpPost]
         public async Task<ActionResult> AddEquipmentToTour([FromBody] TourEquipmentDto tourEquipment)
         {
-            var response = await _httpClient.PostAsJsonAsync("http://localhost:8000/equipmentTours", tourEquipment);
+            var response = await _httpClient.PostAsJsonAsync("http://tours:8000/equipmentTours", tourEquipment);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -33,7 +33,7 @@ namespace Explorer.API.Controllers.Author
         [HttpGet("{tourId:int}")]
         public async Task<ActionResult> GetTourEquipment(long tourId)
         {
-            var response = await _httpClient.GetAsync($"http://localhost:8000/equipmentTours/{tourId}");
+            var response = await _httpClient.GetAsync($"http://tours:8000/equipmentTours/{tourId}");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -50,7 +50,7 @@ namespace Explorer.API.Controllers.Author
         [HttpDelete("{tourId:int}/{equipmentId:int}")]
         public async Task<ActionResult> RemoveEquipmentFromTour(long tourId, long equipmentId)
         {
-            var response = await _httpClient.DeleteAsync($"http://localhost:8000/equipmentTours/{tourId}/{equipmentId}");
+            var response = await _httpClient.DeleteAsync($"http://tours:8000/equipmentTours/{tourId}/{equipmentId}");
 
             if (!response.IsSuccessStatusCode)
             {
