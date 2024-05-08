@@ -4,6 +4,7 @@ using Explorer.Stakeholders.API.Public;
 using Explorer.Stakeholders.Core.Domain;
 using Explorer.Stakeholders.Core.Domain.RepositoryInterfaces;
 using FluentResults;
+using System.Net.Http.Json;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -15,13 +16,15 @@ public class AuthenticationService : IAuthenticationService
     private readonly IUserRepository _userRepository;
     private readonly IPersonRepository _personRepository;
     private readonly IPasswordResetRepository _passwordResetRepository;
+	private readonly HttpClient _httpClient;
 
-    public AuthenticationService(IUserRepository userRepository, IPersonRepository personRepository, ITokenGenerator tokenGenerator, IPasswordResetRepository passwordResetRepository)
+	public AuthenticationService(IUserRepository userRepository, IPersonRepository personRepository, ITokenGenerator tokenGenerator, IPasswordResetRepository passwordResetRepository, HttpClient httpClient)
     {
         _tokenGenerator = tokenGenerator;
         _userRepository = userRepository;
         _personRepository = personRepository;
         _passwordResetRepository = passwordResetRepository;
+        _httpClient = httpClient;
     }
 
     public Result<AuthenticationTokensDto> Login(CredentialsDto credentials)
@@ -52,7 +55,10 @@ public class AuthenticationService : IAuthenticationService
             var user = _userRepository.Create(new User(account.Username, SetPassword(account.Password), UserRole.Tourist, false, verificationToken));
             var person = _personRepository.Create(new Person(user.Id, account.Name, account.Surname, account.Email, "", "", ""));
 
-            var emailSender = new EmailSenderService();
+            GraphUser graphUser = new GraphUser(user.Id, user.Username);
+		   _httpClient.PostAsJsonAsync("http://followers:89/user", graphUser);
+
+			var emailSender = new EmailSenderService();
             emailSender.SendVerificationEmail(person.Email, verificationToken);
 
             return _tokenGenerator.GenerateAccessToken(user, person.Id);
