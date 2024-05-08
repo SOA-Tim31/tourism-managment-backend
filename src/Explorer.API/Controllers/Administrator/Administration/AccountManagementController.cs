@@ -23,7 +23,16 @@ namespace Explorer.API.Controllers.Administrator.Administration
             _accountManagementService = accountManagementService;
         }
 
-        [HttpGet]
+		[HttpGet("all")]
+		public ActionResult<List<AccountDto>> GetAccounts()
+		{
+			var result = _accountManagementService.GetAllAccounts();
+			return CreateResponse(result);
+		}
+
+
+
+		[HttpGet]
         public async Task<ActionResult<List<AccountDto>>> GetAllAccounts()
         {
             using var httpClient = new HttpClient();

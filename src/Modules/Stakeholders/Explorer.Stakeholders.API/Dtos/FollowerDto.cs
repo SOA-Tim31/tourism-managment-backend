@@ -8,9 +8,9 @@ namespace Explorer.Stakeholders.API.Dtos
 {
     public class FollowerDto
     {
-        public long Id {  get; set; }
-        public long UserId { get; set; }
-        public long FollowerId { get; set; }
-        public string FollowerUsername { get; set; }
+        public int userId {  get; set; }
+        public string username { get; set; }
+        public long followingUserId { get; set; }
+        public string followingUsername { get; set; }
     }
 }
