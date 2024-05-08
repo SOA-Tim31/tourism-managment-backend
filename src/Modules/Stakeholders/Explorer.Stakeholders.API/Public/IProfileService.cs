@@ -12,4 +12,6 @@ public interface IProfileService
 {
     Result<UserProfileDto> Get(int userId);
     Result<UserProfileDto> Update(UserProfileDto userProfile);
+
+   
 }

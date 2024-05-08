@@ -47,7 +47,9 @@ public class ProfileService : BaseService<UserProfileDto, Person>, IProfileServi
         }
     }
 
-    public Result<UserProfileDto> Update(UserProfileDto userProfile)
+	
+
+	public Result<UserProfileDto> Update(UserProfileDto userProfile)
     {
         try
         {
