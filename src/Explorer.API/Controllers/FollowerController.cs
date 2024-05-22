@@ -64,6 +64,13 @@ namespace Explorer.API.Controllers
             return CreateResponse(result);
         }
 
+        [HttpGet("recommendations/{id}")]
+        public async Task<ActionResult<List<GraphUser>>> GetFollowerRecommendations(string id)
+        {
+            var followers = await _httpClient.GetFromJsonAsync<GraphUser[]>("http://followers:89/recommendations/" + id);
+            return followers.ToList();
+        }
+
 
     }
 }
