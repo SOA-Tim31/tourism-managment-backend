@@ -5,9 +5,14 @@ using Explorer.Encounters.API.Dtos;
 using Explorer.Encounters.API.Public;
 using Explorer.Encounters.Core.Domain;
 using Explorer.Encounters.Core.UseCases;
+using Explorer.Stakeholders.Core.Domain;
+using Explorer.Tours.Core.Domain.Tours;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Net;
+using System.Text;
 
 namespace Explorer.API.Controllers.Administrator.Administration;
 
@@ -17,21 +22,52 @@ public class EncounterController : BaseApiController
 {
     private readonly IEncounterService _encounterService;
     private readonly IHiddenLocationEncounterService _hiddenLocationEncounterService;
+    private readonly ILogger<EncounterController> _logger;
 
     private readonly ISocialEncounterService _socialEncounterService;
-    public EncounterController(IEncounterService encounterService, ISocialEncounterService socialEncounterService, IHiddenLocationEncounterService hiddenLocationEncounterService)
+    private readonly HttpClient _httpClient;
+    public EncounterController(IEncounterService encounterService, ISocialEncounterService socialEncounterService, IHiddenLocationEncounterService hiddenLocationEncounterService, ILogger<EncounterController> logger)
     {
+        _logger = logger;
         _encounterService = encounterService;
         _socialEncounterService = socialEncounterService;
         _hiddenLocationEncounterService = hiddenLocationEncounterService;
+        _httpClient = new HttpClient
+        {
+            BaseAddress = new Uri("http://encounters:8083")
+        };
     }
-     
-    [HttpGet]
+
+    /*[HttpGet]
+    
     public ActionResult<PagedResult<EncounterDto>> GetAllEncounters([FromQuery] int page, [FromQuery] int pageSize)
     {
         var result = _encounterService.GetPaged(page, pageSize);
         return CreateResponse(result);
+    }*/
+
+    [HttpGet]
+    public async Task<ActionResult<List<EncounterDto>>> GetAllEncounterDto()
+    {
+        try
+        {
+            // Assuming you have an HttpClient configured already
+            using HttpResponseMessage response = await _httpClient.GetAsync("getEncounters");
+
+            response.EnsureSuccessStatusCode();
+
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+
+            var encounterDtos = JsonConvert.DeserializeObject<List<EncounterDto>>(jsonResponse);
+
+            return Ok(encounterDtos);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"An error occurred while retrieving encounters: {ex.Message}");
+        }
     }
+
 
     [HttpGet("social")]
     public ActionResult<PagedResult<SocialEncounterDto>> GetAllSocialEncounters([FromQuery] int page, [FromQuery] int pageSize)
@@ -47,10 +83,31 @@ public class EncounterController : BaseApiController
         return CreateResponse(result);
     }
     [HttpPost]
-    public ActionResult<EncounterDto> Create([FromBody] EncounterDto encounter)
+    public async Task<ActionResult<EncounterDto>> Create([FromBody] EncounterDto encounter)
     {
-        var result = _encounterService.Create(encounter);
-        return CreateResponse(result);
+        try
+        {
+            _logger.LogInformation("STA SE DESAVA");
+            _logger.LogInformation(encounter.ToString());
+            _logger.LogInformation("=================================");
+            var json = System.Text.Json.JsonSerializer.Serialize(encounter);
+
+            _logger.LogInformation(json);
+
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            using HttpResponseMessage response = await _httpClient.PostAsync("/createEncounter", content);
+
+            response.EnsureSuccessStatusCode();
+
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+
+            return Ok(jsonResponse);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"An error occurred while creating tour: {ex.Message}");
+        }
     }
     [HttpPost("hiddenLocation")]
     public ActionResult<HiddenLocationEncounterDto> Create([FromBody] WholeHiddenLocationEncounterDto wholeEncounter)
@@ -71,7 +128,7 @@ public class EncounterController : BaseApiController
         }
 
         HiddenLocationEncounterDto hiddenLocationEncounterDto = new HiddenLocationEncounterDto();
-        hiddenLocationEncounterDto.EncounterId = baseEncounter.Value.Id;
+        hiddenLocationEncounterDto.EncounterId = long.Parse(baseEncounter.Value.Id);
         hiddenLocationEncounterDto.ImageLatitude = wholeEncounter.ImageLatitude;
         hiddenLocationEncounterDto.ImageLongitude = wholeEncounter.ImageLongitude;
         hiddenLocationEncounterDto.ImageURL = wholeEncounter.ImageURL;
@@ -84,7 +141,7 @@ public class EncounterController : BaseApiController
         }
 
         var wholeHiddenLocationEncounterDto = new WholeHiddenLocationEncounterDto();
-        wholeHiddenLocationEncounterDto.EncounterId = baseEncounter.Value.Id;
+        wholeHiddenLocationEncounterDto.EncounterId = long.Parse(baseEncounter.Value.Id);
         wholeHiddenLocationEncounterDto.Name = wholeEncounter.Name;
         wholeHiddenLocationEncounterDto.Description = wholeEncounter.Description;
         wholeHiddenLocationEncounterDto.XpPoints = wholeEncounter.XpPoints;
@@ -99,7 +156,7 @@ public class EncounterController : BaseApiController
         wholeHiddenLocationEncounterDto.DistanceTreshold = wholeEncounter.DistanceTreshold;
         wholeHiddenLocationEncounterDto.ShouldBeApproved = wholeEncounter.ShouldBeApproved;
         return StatusCode((int)HttpStatusCode.Created, wholeHiddenLocationEncounterDto);
-    
+
     }
     [HttpPost("social")]
     public ActionResult<WholeSocialEncounterDto> Create([FromBody] WholeSocialEncounterDto socialEncounter)
@@ -119,7 +176,7 @@ public class EncounterController : BaseApiController
             return StatusCode((int)HttpStatusCode.BadRequest, baseEncounter);
         }
         SocialEncounterDto socialEncounterDto = new SocialEncounterDto();
-        socialEncounterDto.EncounterId = baseEncounter.Value.Id;
+        socialEncounterDto.EncounterId = long.Parse(baseEncounter.Value.Id);
         socialEncounterDto.TouristsRequiredForCompletion = socialEncounter.TouristsRequiredForCompletion;
         socialEncounterDto.DistanceTreshold = socialEncounter.DistanceTreshold;
         socialEncounterDto.TouristIDs = socialEncounter.TouristIDs;
@@ -130,7 +187,7 @@ public class EncounterController : BaseApiController
         }
 
         var wholeSocialEncounterDto = new WholeSocialEncounterDto();
-        wholeSocialEncounterDto.EncounterId = baseEncounter.Value.Id;
+        wholeSocialEncounterDto.EncounterId = long.Parse(baseEncounter.Value.Id);
         wholeSocialEncounterDto.Name = socialEncounter.Name;
         wholeSocialEncounterDto.Description = socialEncounter.Description;
         wholeSocialEncounterDto.XpPoints = socialEncounter.XpPoints;
@@ -157,7 +214,7 @@ public class EncounterController : BaseApiController
     public ActionResult<HiddenLocationEncounterDto> Update([FromBody] WholeHiddenLocationEncounterDto wholeEncounter)
     {
         EncounterDto encounterDto = new EncounterDto();
-        encounterDto.Id = wholeEncounter.EncounterId;
+        encounterDto.Id = wholeEncounter.EncounterId.ToString();
         encounterDto.Name = wholeEncounter.Name;
         encounterDto.Description = wholeEncounter.Description;
         encounterDto.XpPoints = wholeEncounter.XpPoints;
@@ -174,7 +231,7 @@ public class EncounterController : BaseApiController
 
         HiddenLocationEncounterDto hiddenLocationEncounterDto = new HiddenLocationEncounterDto();
         hiddenLocationEncounterDto.Id = wholeEncounter.Id;
-        hiddenLocationEncounterDto.EncounterId = baseEncounter.Value.Id;
+        hiddenLocationEncounterDto.EncounterId = long.Parse(baseEncounter.Value.Id);
         hiddenLocationEncounterDto.ImageLatitude = wholeEncounter.ImageLatitude;
         hiddenLocationEncounterDto.ImageLongitude = wholeEncounter.ImageLongitude;
         hiddenLocationEncounterDto.ImageURL = wholeEncounter.ImageURL;
@@ -186,7 +243,7 @@ public class EncounterController : BaseApiController
             return StatusCode((int)HttpStatusCode.BadRequest, result);
         }
         var wholeHiddenLocationEncounterDto = new WholeHiddenLocationEncounterDto();
-        wholeHiddenLocationEncounterDto.EncounterId = baseEncounter.Value.Id;
+        wholeHiddenLocationEncounterDto.EncounterId = long.Parse(baseEncounter.Value.Id);
         wholeHiddenLocationEncounterDto.Name = wholeEncounter.Name;
         wholeHiddenLocationEncounterDto.Description = wholeEncounter.Description;
         wholeHiddenLocationEncounterDto.XpPoints = wholeEncounter.XpPoints;
@@ -208,7 +265,7 @@ public class EncounterController : BaseApiController
     public ActionResult<WholeSocialEncounterDto> Update([FromBody] WholeSocialEncounterDto socialEncounter)
     {
         EncounterDto encounterDto = new EncounterDto();
-        encounterDto.Id = socialEncounter.EncounterId;
+        encounterDto.Id = socialEncounter.EncounterId.ToString();
         encounterDto.Name = socialEncounter.Name;
         encounterDto.Description = socialEncounter.Description;
         encounterDto.XpPoints = socialEncounter.XpPoints;
@@ -224,7 +281,7 @@ public class EncounterController : BaseApiController
         }
         SocialEncounterDto socialEncounterDto = new SocialEncounterDto();
         socialEncounterDto.Id = socialEncounter.Id;
-        socialEncounterDto.EncounterId = baseEncounter.Value.Id;
+        socialEncounterDto.EncounterId = long.Parse(baseEncounter.Value.Id);
         socialEncounterDto.TouristsRequiredForCompletion = socialEncounter.TouristsRequiredForCompletion;
         socialEncounterDto.DistanceTreshold = socialEncounter.DistanceTreshold;
         socialEncounterDto.TouristIDs = socialEncounter.TouristIDs;
@@ -235,7 +292,7 @@ public class EncounterController : BaseApiController
         }
 
         var wholeSocialEncounterDto = new WholeSocialEncounterDto();
-        wholeSocialEncounterDto.EncounterId = baseEncounter.Value.Id;
+        wholeSocialEncounterDto.EncounterId = long.Parse(baseEncounter.Value.Id);
         wholeSocialEncounterDto.Name = socialEncounter.Name;
         wholeSocialEncounterDto.Description = socialEncounter.Description;
         wholeSocialEncounterDto.XpPoints = socialEncounter.XpPoints;
@@ -275,13 +332,33 @@ public class EncounterController : BaseApiController
         return CreateResponse(result);
     }
     */
-    [HttpGet("getEncounter/{encounterId:int}")]
-    public ActionResult<PagedResult<EncounterDto>> GetEncounter(int encounterId)
+    [HttpGet("getEncounter/{encounterId}")]
+    public async Task<ActionResult<EncounterDto>> GetEncounter(string encounterId)
     {
-        var encounter = _encounterService.GetEncounterById(encounterId);
-        return CreateResponse(encounter);
+        try
+        {
+            // Send a GET request to the backend API to fetch the tour by user ID
+            HttpResponseMessage response = await _httpClient.GetAsync($"getEncounter/{encounterId}");
+
+            // Ensure a successful response
+            response.EnsureSuccessStatusCode();
+
+            // Read the response content as a string
+            string jsonResponse = await response.Content.ReadAsStringAsync();
+
+            // Deserialize the JSON response into a single TourCreationDto object
+            var encounterExecutionDto = JsonConvert.DeserializeObject<EncounterDto>(jsonResponse);
+
+            // Return the TourCreationDto object as ActionResult
+            return Ok(encounterExecutionDto);
+        }
+        catch (Exception ex)
+        {
+            // Return a 500 Internal Server Error with the error message if an exception occurs
+            return StatusCode(500, $"An error occurred while retrieving tour creation data: {ex.Message}");
+        }
     }
-    
+
     [HttpDelete("{baseEncounterId:int}")]
     public ActionResult DeleteEncounter(int baseEncounterId)
     {

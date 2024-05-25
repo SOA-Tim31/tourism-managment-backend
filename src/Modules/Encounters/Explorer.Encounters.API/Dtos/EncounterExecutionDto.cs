@@ -8,7 +8,7 @@ namespace Explorer.Encounters.API.Dtos;
 
 public class EncounterExecutionDto
 {
-    public long Id { get; set; }
+    public string Id { get; set; }
     public long UserId { get; set; }
     public long EncounterId { get; set; }
     public DateTime? CompletionTime { get; set; }
