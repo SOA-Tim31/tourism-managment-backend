@@ -66,6 +66,7 @@ services:
       - "8082:8082"
     environment:
       DATABASE_URL: "host=stakeholdersdb user=postgres password=super dbname=SOA sslmode=disable"
+      STAKEHOLDERS_SERVICE_ADDRESS: ${STAKEHOLDERS_SERVICE_ADDRESS}
     networks:
       - database
     depends_on:
@@ -124,6 +125,24 @@ services:
       - NEO4J_AUTH=neo4j/nekaSifra
     volumes:
       - neo4j_data:/data
+
+  api_gateway:
+    image: api_gateway
+    container_name: api_gateway
+    hostname: api_gateway
+    build:
+      context: /api-gateway
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      STAKEHOLDERS_SERVICE_ADDRESS: stakeholders:8082
+      GATEWAY_ADDRESS: ${GATEWAY_ADDRESS}
+    depends_on:
+      - stakeholders
+    networks:
+      - database
+    ports:
+      - "8001:8001"
 
 
 volumes:

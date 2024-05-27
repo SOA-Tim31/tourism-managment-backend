@@ -21,11 +21,11 @@ namespace Explorer.API.Controllers.Administrator.Administration
         }
 
         [HttpGet]
-        [Authorize(Policy = "administratorPolicy")]
+       // [Authorize(Policy = "administratorPolicy")]
         public async Task<List<AppRatingDto>> GetAll()
         {
              using var httpClient = new HttpClient();
-             httpClient.BaseAddress = new Uri("http://localhost:8081/");
+             httpClient.BaseAddress = new Uri("http://stakeholders:8082/");
 
              try
              {
@@ -49,11 +49,11 @@ namespace Explorer.API.Controllers.Administrator.Administration
         }
 
         [HttpPost]
-        [Authorize(Policy = "touristAuthorPolicy")]
+        //[Authorize(Policy = "touristAuthorPolicy")]
         public async Task<ActionResult<AppRatingDto>> Create([FromBody] AppRatingDto appRating)
         {
             using var httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri("http://localhost:8081/");
+            httpClient.BaseAddress = new Uri("http://stakeholders:8082/");
 
             try
             {

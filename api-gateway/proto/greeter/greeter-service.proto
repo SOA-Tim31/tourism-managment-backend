@@ -1,0 +1,99 @@
+syntax = "proto3";
+
+option go_package = "proto/greeter";
+
+import "google/api/annotations.proto";
+
+service GreeterService {
+  rpc Greet(Request) returns (Response) {
+    option (google.api.http) = {
+      post: "/"
+      body: "*"
+    };
+  }
+
+  rpc GreetTest(Request) returns (Response) {
+    option (google.api.http) = {
+      get: "/"
+    };
+  }
+}
+
+
+service StakeholderService {
+    rpc RegistrationRpc(RegistrationRequest) returns (RegistrationResponse){
+    option (google.api.http) = {
+      post: "/registration"
+      body: "*"
+    };
+  }
+}
+
+service AuthService {
+    rpc LoginRpc(LoginRequest) returns (LoginResponse){
+    option (google.api.http) = {
+      post: "/login"
+      body: "*"
+    };
+  }
+}
+
+
+enum UserRole {
+    Administrator = 0;
+    Tourist = 1;
+    Author = 2;
+}
+
+message User {
+    uint64 Id = 1;  
+    string Username = 5;  
+    string Password = 6;  
+    UserRole Role = 7;  
+    bool IsActive = 8;  
+    string VerificationToken = 9; 
+}
+
+message Person {
+	uint64 Id= 1;        
+	uint64 UserId=2;       
+	string Name=3;
+	string Surname=4;
+	string Email=5;  
+	string ProfileImage=6;
+	string Bio=7; 
+	string Quote=8;
+}
+
+
+
+message RegistrationRequest {
+    string username = 1;  // Username polje
+    string password = 2;  // Password polje
+    string email = 3;  // Email polje
+    string name = 4;  // Name polje
+    string surname = 5;  // Surname polje
+    string role = 6;  // Role polje
+}
+
+message RegistrationResponse{
+    string message = 1;
+}
+
+message LoginRequest {
+    string username = 1;
+    string password = 2;
+}
+
+message LoginResponse {
+    uint64 id = 1;
+    string access_token = 2;
+}
+
+message Request {
+  string name = 1;
+}
+
+message Response {
+  string greeting = 2;
+}
