@@ -147,6 +147,8 @@ var GreeterService_ServiceDesc = grpc.ServiceDesc{
 
 const (
 	StakeholderService_RegistrationRpc_FullMethodName = "/StakeholderService/RegistrationRpc"
+	StakeholderService_FindAllUsersRpc_FullMethodName = "/StakeholderService/FindAllUsersRpc"
+	StakeholderService_GetProfileRpc_FullMethodName   = "/StakeholderService/GetProfileRpc"
 )
 
 // StakeholderServiceClient is the client API for StakeholderService service.
@@ -154,6 +156,8 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type StakeholderServiceClient interface {
 	RegistrationRpc(ctx context.Context, in *RegistrationRequest, opts ...grpc.CallOption) (*RegistrationResponse, error)
+	FindAllUsersRpc(ctx context.Context, in *FindAllRequest, opts ...grpc.CallOption) (*FindAllResponse, error)
+	GetProfileRpc(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*GetProfileResponse, error)
 }
 
 type stakeholderServiceClient struct {
@@ -173,11 +177,31 @@ func (c *stakeholderServiceClient) RegistrationRpc(ctx context.Context, in *Regi
 	return out, nil
 }
 
+func (c *stakeholderServiceClient) FindAllUsersRpc(ctx context.Context, in *FindAllRequest, opts ...grpc.CallOption) (*FindAllResponse, error) {
+	out := new(FindAllResponse)
+	err := c.cc.Invoke(ctx, StakeholderService_FindAllUsersRpc_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *stakeholderServiceClient) GetProfileRpc(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*GetProfileResponse, error) {
+	out := new(GetProfileResponse)
+	err := c.cc.Invoke(ctx, StakeholderService_GetProfileRpc_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // StakeholderServiceServer is the server API for StakeholderService service.
 // All implementations must embed UnimplementedStakeholderServiceServer
 // for forward compatibility
 type StakeholderServiceServer interface {
 	RegistrationRpc(context.Context, *RegistrationRequest) (*RegistrationResponse, error)
+	FindAllUsersRpc(context.Context, *FindAllRequest) (*FindAllResponse, error)
+	GetProfileRpc(context.Context, *GetProfileRequest) (*GetProfileResponse, error)
 	mustEmbedUnimplementedStakeholderServiceServer()
 }
 
@@ -187,6 +211,12 @@ type UnimplementedStakeholderServiceServer struct {
 
 func (UnimplementedStakeholderServiceServer) RegistrationRpc(context.Context, *RegistrationRequest) (*RegistrationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegistrationRpc not implemented")
+}
+func (UnimplementedStakeholderServiceServer) FindAllUsersRpc(context.Context, *FindAllRequest) (*FindAllResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindAllUsersRpc not implemented")
+}
+func (UnimplementedStakeholderServiceServer) GetProfileRpc(context.Context, *GetProfileRequest) (*GetProfileResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetProfileRpc not implemented")
 }
 func (UnimplementedStakeholderServiceServer) mustEmbedUnimplementedStakeholderServiceServer() {}
 
@@ -219,6 +249,42 @@ func _StakeholderService_RegistrationRpc_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _StakeholderService_FindAllUsersRpc_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FindAllRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StakeholderServiceServer).FindAllUsersRpc(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StakeholderService_FindAllUsersRpc_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StakeholderServiceServer).FindAllUsersRpc(ctx, req.(*FindAllRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StakeholderService_GetProfileRpc_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetProfileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StakeholderServiceServer).GetProfileRpc(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StakeholderService_GetProfileRpc_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StakeholderServiceServer).GetProfileRpc(ctx, req.(*GetProfileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // StakeholderService_ServiceDesc is the grpc.ServiceDesc for StakeholderService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -229,6 +295,14 @@ var StakeholderService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RegistrationRpc",
 			Handler:    _StakeholderService_RegistrationRpc_Handler,
+		},
+		{
+			MethodName: "FindAllUsersRpc",
+			Handler:    _StakeholderService_FindAllUsersRpc_Handler,
+		},
+		{
+			MethodName: "GetProfileRpc",
+			Handler:    _StakeholderService_GetProfileRpc_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
