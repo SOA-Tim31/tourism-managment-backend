@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.9"
 
 services:
   explorer:
@@ -20,8 +20,6 @@ services:
     depends_on:
       - database
 
-
-
   database:
     image: postgres:13
     restart: always
@@ -42,6 +40,7 @@ services:
       - "5432:5432"
 
   tours:
+    # build: ../tours/
     image: tours
     restart: on-failure
     networks:
@@ -60,7 +59,7 @@ services:
 
   stakeholders:
     build: ../stakeholders/
-    image: stakeholders 
+    image: stakeholders
     restart: always
     ports:
       - "8082:8082"
@@ -70,7 +69,7 @@ services:
     networks:
       - database
     depends_on:
-      - stakeholdersdb 
+      - stakeholdersdb
 
   stakeholdersdb:
     image: postgres
@@ -78,7 +77,7 @@ services:
     networks:
       - database
     ports:
-      - 5435:5432 
+      - 5435:5432
     environment:
       - POSTGRES_DB=SOA
       - POSTGRES_USER=postgres
@@ -86,8 +85,8 @@ services:
     volumes:
       - stakeholders-data:/var/lib/postgresql/data
 
-
   followers:
+    # build: ../follower/
     image: followers
     restart: on-failure
     networks:
@@ -101,7 +100,6 @@ services:
     depends_on:
       neo4j:
         condition: service_healthy
-   
 
   neo4j:
     image: neo4j
@@ -137,13 +135,13 @@ services:
     environment:
       STAKEHOLDERS_SERVICE_ADDRESS: stakeholders:8082
       GATEWAY_ADDRESS: ${GATEWAY_ADDRESS}
+      FOLLOWERS_SERVICE_ADDRESS: ${FOLLOWERS_SERVICE_ADDRESS}
     depends_on:
       - stakeholders
     networks:
       - database
     ports:
       - "8001:8001"
-
 
 volumes:
   database-data:

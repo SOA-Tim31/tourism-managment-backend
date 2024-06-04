@@ -49,6 +49,15 @@ service AuthService {
   }
 }
 
+service FollowerService {
+    rpc CreateUser(UserRequest) returns (UserResponse) {}
+    rpc FollowUser(FollowRequest) returns (FollowResponse) {
+    option (google.api.http) = {
+      post: "/follow"
+      body: "*"
+    };
+  }
+}
 
 enum UserRole {
     Administrator = 0;
@@ -76,8 +85,6 @@ message Person {
 	string Quote=8;
 }
 
-
-
 message RegistrationRequest {
     string username = 1;  // Username polje
     string password = 2;  // Password polje
@@ -89,6 +96,7 @@ message RegistrationRequest {
 
 message RegistrationResponse{
     string message = 1;
+    uint64 id = 2;
 }
 
 message LoginRequest {
@@ -131,4 +139,21 @@ message Request {
 
 message Response {
   string greeting = 2;
+}
+
+message UserRequest{
+    uint64 Id = 1;     
+	string Username = 2;
+}
+
+message UserResponse{
+    string messageConfirmation = 1;
+}
+
+message FollowRequest{
+  repeated string Username = 1;
+}
+
+message FollowResponse{
+  string messageConfirmation = 1;
 }

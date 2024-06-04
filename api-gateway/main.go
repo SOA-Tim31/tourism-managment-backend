@@ -3,7 +3,9 @@ package main
 import (
 	"context"
 	"example/gateway/config"
+	"example/gateway/handlers"
 	"example/gateway/proto/greeter"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -68,6 +70,25 @@ func main() {
 		log.Fatalln("Failed to register gateway:", err)
 	}
 
+	connFollowers, err := grpc.DialContext(
+		context.Background(),
+		cfg.FollowersServiceAddress,
+		grpc.WithBlock(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	clientFollowers := greeter.NewFollowerServiceClient(connFollowers)
+	err = greeter.RegisterFollowerServiceHandlerClient(
+		context.Background(), gwmux, clientFollowers,
+	)
+	if err != nil {
+		log.Fatalln("Failed to register gateway:", err)
+	}
+
+	handlers.InjectRPCClients(clientUser, clientFollowers)
+	// Register custom rest handlers
+	fmt.Println("Registering custom rest paths")
+	gwmux.HandlePath("POST", "/follower/create", handlers.CreateUser)
+
 	gwServer := &http.Server{
 		Addr:    cfg.Address,
 		Handler: gwmux,
@@ -83,7 +104,6 @@ func main() {
 	signal.Notify(stopCh, syscall.SIGTERM)
 
 	<-stopCh
-
 	if err = gwServer.Close(); err != nil {
 		log.Fatalln("error while stopping server: ", err)
 	}
