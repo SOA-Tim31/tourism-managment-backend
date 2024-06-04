@@ -27,6 +27,17 @@ service StakeholderService {
       body: "*"
     };
   }
+  rpc FindAllUsersRpc(FindAllRequest) returns (FindAllResponse){
+    option (google.api.http) = {
+      get: "/findAllUsers"
+    };
+  }
+  rpc GetProfileRpc(GetProfileRequest) returns (GetProfileResponse){
+      option (google.api.http) = {
+        get: "/getProfile/{id}"
+      };
+  }
+
 }
 
 service AuthService {
@@ -96,6 +107,30 @@ message LoginRequest {
 message LoginResponse {
     uint64 id = 1;
     string access_token = 2;
+}
+
+message AccountDto {
+    uint64 UserId = 1;
+    string Username = 2;
+    string Password = 3;
+    string Email = 4;
+    string Role = 5;
+    bool IsActive = 6;
+}
+
+message FindAllRequest {
+}
+
+message FindAllResponse {
+    repeated AccountDto accounts = 1;
+}
+
+message GetProfileRequest {
+    string id = 1;
+}
+
+message GetProfileResponse{
+    Person person = 1;
 }
 
 message Request {

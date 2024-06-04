@@ -15,6 +15,8 @@ service GreeterService {
 
 service StakeholderService {
     rpc RegistrationRpc(RegistrationRequest) returns (RegistrationResponse);
+    rpc FindAllUsersRpc(FindAllRequest) returns (FindAllResponse);
+    rpc GetProfileRpc(GetProfileRequest) returns (GetProfileResponse);
   }
 
 service AuthService {
