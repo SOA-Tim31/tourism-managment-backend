@@ -61,6 +61,7 @@ message RegistrationRequest {
 
 message RegistrationResponse{
     string message = 1;
+    uint64 id = 2;
 }
 
 message LoginRequest {

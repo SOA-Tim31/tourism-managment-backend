@@ -6,6 +6,7 @@ type Config struct {
 	Address                   string
 	GreeterServiceAddress     string
 	StakeholderServiceAddress string
+	FollowersServiceAddress string
 }
 
 func GetConfig() Config {
@@ -13,5 +14,12 @@ func GetConfig() Config {
 		GreeterServiceAddress:     os.Getenv("GREETER_SERVICE_ADDRESS"),
 		Address:                   os.Getenv("GATEWAY_ADDRESS"),
 		StakeholderServiceAddress: os.Getenv("STAKEHOLDERS_SERVICE_ADDRESS"),
+		FollowersServiceAddress: os.Getenv("FOLLOWERS_SERVICE_ADDRESS"),
 	}
+	// return Config{
+	// 	GreeterServiceAddress:     os.Getenv("GREETER_SERVICE_ADDRESS"),
+	// 	Address:                   "localhost:8001",
+	// 	StakeholderServiceAddress: "localhost:8082",
+	// 	FollowersServiceAddress: "localhost:8089",
+	// }
 }
