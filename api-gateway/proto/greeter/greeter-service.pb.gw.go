@@ -10,7 +10,6 @@ package greeter
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"net/http"
 
@@ -219,7 +218,7 @@ func local_request_AuthService_LoginRpc_0(ctx context.Context, marshaler runtime
 func request_FollowerService_FollowUser_0(ctx context.Context, marshaler runtime.Marshaler, client FollowerServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq FollowRequest
 	var metadata runtime.ServerMetadata
-	fmt.Println("IDE GAAAAAAS")
+
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
