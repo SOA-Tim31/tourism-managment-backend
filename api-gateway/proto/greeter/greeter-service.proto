@@ -59,6 +59,20 @@ service FollowerService {
   }
 }
 
+service TourService{
+  rpc CreateTour(Tour) returns (TourResponse){
+    option (google.api.http) = {
+      post: "/createTour"
+      body: "*"
+    };
+  }
+  rpc GetAllTours(GetAllRequest) returns (GetAllResponse){
+    option (google.api.http) = {
+      get: "/getAllTours"
+    };
+  }
+}
+
 enum UserRole {
     Administrator = 0;
     Tourist = 1;
@@ -156,4 +170,38 @@ message FollowRequest{
 
 message FollowResponse{
   string messageConfirmation = 1;
+}
+
+
+enum DifficultyLevel {
+    Easy = 0;
+    Moderate = 1;
+    Hard = 2;
+}
+
+
+message Tour{
+    uint64 Id = 1; 
+    string Name=2;
+    string Description=3;
+    DifficultyLevel Level = 4;
+    uint64 Status = 5;
+    uint64 Price = 6;
+    string PublishedDateTime = 7;
+    string ArchivedDateTime = 8;
+    uint64 UserId = 9;
+
+}
+
+message TourResponse{
+    string Message=1;
+}
+
+
+message GetAllResponse{
+   repeated Tour tours = 1;
+}
+
+message GetAllRequest{
+    string id = 1;
 }

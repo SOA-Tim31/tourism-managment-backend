@@ -48,7 +48,28 @@ func main() {
 		log.Fatalln("Failed to dial server:", err)
 	}
 
+	connTours, err := grpc.DialContext(
+		context.Background(),
+		cfg.ToursServiceAddress,
+		grpc.WithBlock(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+
+	if err != nil {
+		log.Fatalln("Failed to dial server:", err)
+	}
+
 	gwmux := runtime.NewServeMux()
+
+	clientTour := greeter.NewTourServiceClient(connTours)
+	err = greeter.RegisterTourServiceHandlerClient(
+		context.Background(),
+		gwmux,
+		clientTour,
+	)
+	if err != nil {
+		log.Fatalln("Failed to register gateway:", err)
+	}
 
 	clientStakeholder := greeter.NewAuthServiceClient(connStakeholders)
 	err = greeter.RegisterAuthServiceHandlerClient(
@@ -89,7 +110,8 @@ func main() {
 	fmt.Println("Registering custom rest paths")
 	gwmux.HandlePath("POST", "/follower/create", handlers.CreateUser)
 
-	gwServer := &http.Server{
+	fmt.Println("gas")
+	gwServer := &http.Server{	
 		Addr:    cfg.Address,
 		Handler: gwmux,
 	}
@@ -104,7 +126,7 @@ func main() {
 	signal.Notify(stopCh, syscall.SIGTERM)
 
 	<-stopCh
-	if err = gwServer.Close(); err != nil {
+	if err := gwServer.Close(); err != nil {
 		log.Fatalln("error while stopping server: ", err)
 	}
 }

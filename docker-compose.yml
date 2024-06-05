@@ -46,7 +46,7 @@ services:
     networks:
       - database
     ports:
-      - "8000:88"
+      - "8000:8000"
     environment:
       DATABASE_HOST: database
       DATABASE_PORT: 5432
@@ -54,7 +54,6 @@ services:
       DATABASE_USER: postgres
       DATABASE_SCHEMA: explorer
     depends_on:
-      - explorer
       - database
 
   stakeholders:
@@ -136,6 +135,7 @@ services:
       STAKEHOLDERS_SERVICE_ADDRESS: stakeholders:8082
       GATEWAY_ADDRESS: ${GATEWAY_ADDRESS}
       FOLLOWERS_SERVICE_ADDRESS: ${FOLLOWERS_SERVICE_ADDRESS}
+      TOURS_SERVICE_ADDRESS: ${TOURS_SERVICE_ADDRESS}
     depends_on:
       - stakeholders
     networks:

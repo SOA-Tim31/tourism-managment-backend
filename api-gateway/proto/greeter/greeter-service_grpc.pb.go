@@ -525,3 +525,130 @@ var FollowerService_ServiceDesc = grpc.ServiceDesc{
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "greeter/greeter-service.proto",
 }
+
+const (
+	TourService_CreateTour_FullMethodName  = "/TourService/CreateTour"
+	TourService_GetAllTours_FullMethodName = "/TourService/GetAllTours"
+)
+
+// TourServiceClient is the client API for TourService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type TourServiceClient interface {
+	CreateTour(ctx context.Context, in *Tour, opts ...grpc.CallOption) (*TourResponse, error)
+	GetAllTours(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
+}
+
+type tourServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewTourServiceClient(cc grpc.ClientConnInterface) TourServiceClient {
+	return &tourServiceClient{cc}
+}
+
+func (c *tourServiceClient) CreateTour(ctx context.Context, in *Tour, opts ...grpc.CallOption) (*TourResponse, error) {
+	out := new(TourResponse)
+	err := c.cc.Invoke(ctx, TourService_CreateTour_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tourServiceClient) GetAllTours(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error) {
+	out := new(GetAllResponse)
+	err := c.cc.Invoke(ctx, TourService_GetAllTours_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// TourServiceServer is the server API for TourService service.
+// All implementations must embed UnimplementedTourServiceServer
+// for forward compatibility
+type TourServiceServer interface {
+	CreateTour(context.Context, *Tour) (*TourResponse, error)
+	GetAllTours(context.Context, *GetAllRequest) (*GetAllResponse, error)
+	mustEmbedUnimplementedTourServiceServer()
+}
+
+// UnimplementedTourServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedTourServiceServer struct {
+}
+
+func (UnimplementedTourServiceServer) CreateTour(context.Context, *Tour) (*TourResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateTour not implemented")
+}
+func (UnimplementedTourServiceServer) GetAllTours(context.Context, *GetAllRequest) (*GetAllResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllTours not implemented")
+}
+func (UnimplementedTourServiceServer) mustEmbedUnimplementedTourServiceServer() {}
+
+// UnsafeTourServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to TourServiceServer will
+// result in compilation errors.
+type UnsafeTourServiceServer interface {
+	mustEmbedUnimplementedTourServiceServer()
+}
+
+func RegisterTourServiceServer(s grpc.ServiceRegistrar, srv TourServiceServer) {
+	s.RegisterService(&TourService_ServiceDesc, srv)
+}
+
+func _TourService_CreateTour_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Tour)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TourServiceServer).CreateTour(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TourService_CreateTour_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TourServiceServer).CreateTour(ctx, req.(*Tour))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TourService_GetAllTours_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TourServiceServer).GetAllTours(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TourService_GetAllTours_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TourServiceServer).GetAllTours(ctx, req.(*GetAllRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// TourService_ServiceDesc is the grpc.ServiceDesc for TourService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var TourService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "TourService",
+	HandlerType: (*TourServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateTour",
+			Handler:    _TourService_CreateTour_Handler,
+		},
+		{
+			MethodName: "GetAllTours",
+			Handler:    _TourService_GetAllTours_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "greeter/greeter-service.proto",
+}
